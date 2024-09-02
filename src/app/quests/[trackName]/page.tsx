@@ -24,15 +24,6 @@ const QuestPage = ({params}:{params:{trackName:string}}) => {
 
   // export interface trackDataType{
   const [trackData,setTrackData]=useState<trackDataType>();
-  
-  // if(track=='solana'){
-  //   setTrackData(solanaQuestData);
-  // }
-  // else if(track=='metaplex'){
-  //   setTrackData(metaplexQuestData);
-  // }else{
-  //   setTrackData(blockchainQuestData);
-  // }
 
   useEffect(()=>{
     track=='solana'?setTrackData(solanaQuestData):(track=='metaplex'?setTrackData(metaplexQuestData):setTrackData(blockchainQuestData))

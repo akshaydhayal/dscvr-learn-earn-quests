@@ -48,7 +48,7 @@ const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
       {/* Breadcrumbs and Title Section */}
       <section className="bg-blue-800 p-4">
         <div className="text-sm text-gray-300">
-          <a href="#" className="hover:text-white">
+          <a onClick={()=>router.push("/quests")} className="hover:text-white cursor-pointer">
             All tracks
           </a>{" "}
           &gt;{" "}
@@ -66,10 +66,10 @@ const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
       {/* Main Content */}
       <main className="flex">
         {/* Sidebar */}
-        <aside className="w-1/4 bg-gray-800 p-8 border-r border-gray-700">
+        <aside className="w-1/4 bg-gray-800 p-3 py-8 md:p-8 border-r border-gray-700">
           <nav className="space-y-4">
             {subtrackData && subtrackData.pages.map((item, index) => (
-              <a href="#" className={`block text-[16px] text-slate-300 hover:text-blue-400 ${index === pageNo ? "text-green-400" : ""}`} 
+              <a className={`block cursor-pointer text-[16px]  hover:text-blue-400 ${index === pageNo ? "text-green-400" : "text-slate-300"}`} 
               onClick={()=>setPageNo(index)} key={index}>
                 {index + 1}. {item.heading} 
               </a>
@@ -121,48 +121,11 @@ const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
             Now, on to building ...
           </p> */}
         {/* <NavigationBar/> */}
-        <NavigationBarr pageNo={pageNo} setPageNo={setPageNo} totalPages={subtrackData.pages.length}/>
+        <NavigationBarr pageNo={pageNo} setPageNo={setPageNo} totalPages={subtrackData.pages.length} subtractData={subtrackData}/>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-black py-8 text-sm text-gray-400">
-        <div className="text-center">
-          This quest is open-source. If you find any issues and want to improve the content or contribute in any way, please{" "}
-          <a href="#" className="text-blue-400 hover:underline">
-            fork this repo
-          </a>{" "}
-          and raise a PR. We appreciate it. :)
-        </div>
-        <div className="flex justify-between items-center px-8 mt-4">
-          <div className="space-y-2">
-            <div className="text-white font-bold flex items-center">
-              <span className="mr-2">🔘</span> {/* Placeholder for logo/icon */}
-              Questbook
-            </div>
-            <p>Connect with us on:</p>
-            <div className="flex space-x-4">
-              {/* Social icons (Placeholder) */}
-              <span>🔗</span>
-              <span>🔗</span>
-              <span>🔗</span>
-            </div>
-          </div>
-          <div>
-            <p>992 San Antonio Road, Palo Alto, CA 94303</p>
-            <p>Palo Alto, CA 94303</p>
-            <p>support@questbook.app</p>
-          </div>
-          <div className="space-y-2">
-            <p>Mobile Apps</p>
-            {/* App Store Icons (Placeholder) */}
-            <div className="flex space-x-2">
-              <span className="bg-gray-700 p-2 rounded">📱</span>
-              <span className="bg-gray-700 p-2 rounded">📱</span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      
     </div>
   );
 };
@@ -172,36 +135,9 @@ export default QuestPage;
 
 
 
-
-
-
-
-const NavigationBar = () => {
-  return (
-    <div className="flex justify-between items-center bg-gray-900 py-4 px-6">
-      <div className="flex items-center">
-        <button className="mr-4 text-gray-400 hover:text-white focus:outline-none">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <span className="text-gray-400">Introduction</span>
-      </div>
-      <div className="flex items-center">
-        <span className="text-gray-400 mr-4">Getting some money</span>
-        <button className="text-gray-400 hover:text-white focus:outline-none">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  );
-};
-
-
-function NavigationBarr({pageNo,setPageNo,totalPages}){
+function NavigationBarr({pageNo,setPageNo,totalPages,subtrackData}:{pageNo:number,subtrackData:subtrackDataType,totalPages:number}){
   console.log("totalPages : ",totalPages);
+  console.log("subtract Data in nav :",subtrackData);
   return<div className="flex justify-between mt-6 border-t border-t-slate-600 py-3">
     
     <div className="flex items-center gap-4 cursor-pointer hover:text-slate-100" onClick={()=>{
@@ -210,7 +146,8 @@ function NavigationBarr({pageNo,setPageNo,totalPages}){
       <p className="text-slate-400 font-medium text-5xl hover:text-slate-300">{`<`}</p>
       <div className="flex flex-col gap-1">
         <p className="text-slate-400 hover:text-slate-300">Prev</p>
-        <p className="text-slate-200  font-medium hover:text-slate-100">Getting some money</p>
+        {/* <p className="text-slate-200  font-medium hover:text-slate-100">{(pageNo>0)?(subtrackData?.pages[pageNo-1].heading):(subtrackData?.pages[pageNo].heading)}</p> */}
+        <p className="text-slate-200  font-medium hover:text-slate-100">{`${subtrackData?.pages[2].heading}`}</p>
       </div>
     </div>
     
@@ -219,7 +156,8 @@ function NavigationBarr({pageNo,setPageNo,totalPages}){
     }}>
       <div className="flex flex-col gap-1">
         <p className="text-slate-400 hover:text-slate-300">Next</p>
-        <p className="text-slate-200  font-medium hover:text-slate-100">Getting some money</p>
+        {/* <p className="text-slate-200  font-medium hover:text-slate-100">{(pageNo<totalPages-1)?(`${subtrackData?.pages[pageNo+1].heading}`):(subtrackData.pages[pageNo].heading)}</p> */}
+        <p className="text-slate-200  font-medium hover:text-slate-100">{subtrackData?.pages[1].heading}</p>
       </div>
       <p className="text-slate-400 font-medium text-5xl hover:text-slate-300">{`>`}</p>
     </div>

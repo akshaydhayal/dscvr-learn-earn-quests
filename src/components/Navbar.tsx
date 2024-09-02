@@ -1,14 +1,17 @@
+"use client";
+import { useRouter } from 'next/navigation';
 import React from 'react'
 
 const Navbar = () => {
+  const router=useRouter();
   return (
     <div className="flex justify-between items-center p-4 bg-black">
-      <div className="text-white font-bold text-xl flex items-center">
+      <div onClick={()=>router.push("/")} className="text-white font-bold text-xl flex items-center cursor-pointer">
         <span className="mr-2">🔘</span> {/* Placeholder for logo/icon */}
-        Questbook
+        QuestHub
       </div>
-      <nav className="flex space-x-8">
-        <a href="#" className="text-white hover:text-gray-300">
+      <nav className="flex items-center space-x-8">
+        <a onClick={()=>router.push("/quests")} className="text-white hover:text-gray-300 cursor-pointer">
           Explore Tracks
         </a>
         <a href="#" className="text-white hover:text-gray-300">
