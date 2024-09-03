@@ -1,10 +1,20 @@
 "use client";
+import { useCanvasClient } from '@/utils/useCanvasClient';
+import { registerCanvasWallet } from '@dscvr-one/canvas-wallet-adapter';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useRouter } from 'next/navigation';
 import React from 'react'
 
 const Navbar = () => {
   const router=useRouter();
+  const { client, user, content, isReady } = useCanvasClient();
+
+  if (client) registerCanvasWallet(client);
+  console.log("client", client);
+  console.log(user);
+  console.log(content);
+  console.log(isReady);
+
   return (
     <div className="flex justify-between items-center p-4 bg-black">
       <div onClick={()=>router.push("/")} className="text-white font-bold text-xl flex items-center cursor-pointer">

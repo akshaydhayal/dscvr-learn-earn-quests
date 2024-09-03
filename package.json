@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dscvr-one/canvas-client-sdk": "^1.1.1",
+    "@dscvr-one/canvas-wallet-adapter": "^1.0.2",
     "@metaplex-foundation/mpl-core": "^1.1.1",
     "@metaplex-foundation/umi": "^0.9.2",
     "@metaplex-foundation/umi-bundle-defaults": "^0.9.2",
