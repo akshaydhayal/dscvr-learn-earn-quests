@@ -6,6 +6,9 @@ import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-ad
 import { assetMetadataUri } from "./assetMetadata";
 
 export async function createAsset(wallet:any, trackName:string, subTrackNo:number) {
+  if(!wallet){
+    await wallet.connect();
+  }
   // Setup Umi
   const umi = createUmi("https://api.devnet.solana.com", "confirmed");
 

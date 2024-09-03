@@ -349,6 +349,92 @@ const QuizQuestion = ({
 
 
 
+
+// import React from "react";
+// import { useWallet } from "@solana/wallet-adapter-react";
+// import { notify } from "./utils/notifications"; // Import your notification handler if needed
+// import { Cuboid, Star } from "some-icon-library"; // Replace with your actual icon imports
+// import { createAsset } from "./path-to-create-asset-function"; // Import your createAsset function
+
+
+// const RewardsComponent = ({ trackName, subTrackNo }) => {
+//   const { publicKey, connect, connected } = useWallet(); // Ensure useWallet is properly imported
+
+//   const handleGenerateAssets = async () => {
+//     try {
+//       if (!connected) {
+//         // If the wallet is not connected, prompt to connect
+//         console.log("Connecting wallet..."); // Debugging statement
+//         await connect(); // Ensure this method triggers the wallet connection prompt
+//         console.log("Wallet connected");
+//       }
+
+//       // Re-check connection status after attempting to connect
+//       if (connected && publicKey) {
+//         console.log("Creating asset with connected wallet..."); // Debugging statement
+//         await createAsset(publicKey, trackName, subTrackNo);
+//         console.log("Asset created successfully");
+//       } else {
+//         console.log("Wallet not connected or no public key available");
+//         console.log({ type: "error", message: "Wallet connection failed" });
+//       }
+//     } catch (error) {
+//       console.error("Error connecting wallet or creating asset:", error);
+//       console.log({ type: "error", message: error.message || "Something went wrong" });
+//     }
+//   };
+
+//   return (
+//     <div className="bg-gray-900 text-white p-8 font-sans w-full">
+//       <div className="max-w-md mx-auto">
+//         <div className="mb-6 w-full flex items-center gap-6">
+//           <div className="w-16 h-16 bg-gray-800 rounded-xl flex items-center justify-center mb-4">
+//             {/* <Cube className="w-12 h-12 text-gray-600" /> */}
+//             <Cuboid className="w-14 h-14 text-gray-600" />
+//           </div>
+//           <h2 className="text-2xl font-bold ">Rewards</h2>
+//         </div>
+
+//         <div className="space-y-4">
+//           <div className="flex items-center justify-between">
+//             <div className="flex items-center">
+//               <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
+//               <span>Primary address</span>
+//             </div>
+//             <button className="text-blue-400 hover:text-blue-300">Linea</button>
+//           </div>
+
+//           <div className="bg-gray-800 rounded-lg p-4 flex items-center justify-between">
+//             <span>Track Completion NFT</span>
+//             <div className="w-5 h-5 bg-yellow-600 rounded"></div>
+//           </div>
+
+//           <div className="bg-gray-800 rounded-lg p-4 flex items-center justify-between">
+//             <span>XP</span>
+//             <div className="flex items-center">
+//               <Star className="w-5 h-5 text-green-400 mr-1" />
+//               <span>75 XP</span>
+//             </div>
+//           </div>
+//         </div>
+
+//         <button
+//           className="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+//           onClick={handleGenerateAssets} // Use the handleGenerateAssets function
+//         >
+//           Mint your NFT badge!!
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+
+
+
+
+
+
 const RewardsComponent = ({ trackName, subTrackNo }) => {
   // const { publicKey, sendTransaction } = useWallet();
   // if (!publicKey) {
@@ -358,6 +444,7 @@ const RewardsComponent = ({ trackName, subTrackNo }) => {
   const wallet = useWallet();
   if (!wallet) {
     console.log("Wallet not connected");
+    // wallet.connect()
   }
   console.log("wallet : ", wallet);
 
@@ -399,6 +486,10 @@ const RewardsComponent = ({ trackName, subTrackNo }) => {
           className="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 
         px-4 rounded"
           onClick={() => {
+            // if(!wallet){
+            //   alert("Please connect your wallet first");
+            //   // wallet.connect()
+            // }
             createAsset(wallet, trackName, subTrackNo);
           }}
         >

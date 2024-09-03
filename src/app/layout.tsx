@@ -8,6 +8,7 @@ import { clusterApiUrl } from "@solana/web3.js";
 import { WalletModalProvider, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import "@solana/wallet-adapter-react-ui/styles.css";
+import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,10 +26,19 @@ export default function RootLayout({
   const phantomWallet=new PhantomWalletAdapter();
   return (
     <html lang="en">
+      <Head>
+        <meta name="dscvr:canvas:version" content="vNext"/>
+        <meta name="og:image" content="https://my-canvas.com/preview-image.png"/>
+      </Head>
+      <head>
+        <meta name="dscvr:canvas:version" content="vNext"/>
+        <meta name="og:image" content="https://my-canvas.com/preview-image.png"/>
+      </head>
       <body className={inter.className}>
         <div>
           <ConnectionProvider endpoint={endpoint} >
-            <WalletProvider wallets={[phantomWallet]}>
+            <WalletProvider wallets={[phantomWallet]} autoConnect>
+            {/* <WalletProvider wallets={[]} autoConnect> */}
               <WalletModalProvider>
                 {/* <WalletMultiButton/> */}
                 <Navbar/>
