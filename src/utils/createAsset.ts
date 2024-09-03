@@ -14,8 +14,10 @@ export async function createAsset(wallet:any, trackName:string, subTrackNo:numbe
 
   umi.use(walletAdapterIdentity(wallet));
   console.log("trackName ; ", trackName, " subTrackNo : ", subTrackNo);
+  //@ts-ignore
   console.log('urip : ',assetMetadataUri[trackName][subTrackNo]);
 
+  //@ts-ignore
   const assetMetadataLink=assetMetadataUri[trackName][subTrackNo];
   const questName=trackName=='solana'?'Solana Quest':(trackName=='metaplex'?'Metaplex Core Quest':'Blockchain Quest')
   console.log('questName : ',questName);

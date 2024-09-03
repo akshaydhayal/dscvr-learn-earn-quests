@@ -435,7 +435,7 @@ const QuizQuestion = ({
 
 
 
-const RewardsComponent = ({ trackName, subTrackNo }) => {
+const RewardsComponent = ({ trackName, subTrackNo }:{trackName:string,subTrackNo:number}) => {
   // const { publicKey, sendTransaction } = useWallet();
   // if (!publicKey) {
   //   console.log("Wallet not connected");
