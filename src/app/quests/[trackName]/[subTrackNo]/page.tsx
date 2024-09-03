@@ -8,14 +8,20 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { trackDataType } from "../page";
 import { useRouter } from "next/navigation";
 
+import { useWallet } from "@solana/wallet-adapter-react";
+import { createAsset } from "@/utils/createAsset";
+
+
+
 export type subtrackDataType = {
-    heading: string;
-    subheading: string;
-    subtrack_image: string;
-    points: number;
-    pages: { heading: string; content: string[] }[];
-    quiz: { question: string; options: string[]; answer: string; explaination: string }[];
+  heading: string;
+  subheading: string;
+  subtrack_image: string;
+  points: number;
+  pages: { heading: string; content: string[] }[];
+  quiz: { question: string; options: string[]; answer: string; explaination: string }[];
 };
+
 
 const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
   const {trackName,subTrackNo}=params;
@@ -142,7 +148,7 @@ const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
           )} */}
 
         {/* {quizQuestionNo==-2 && attemptedQuestions.length==subtrackData.quiz.length && <RewardsComponent/>} */}
-        {quizQuestionNo==-2 && showRewards && <RewardsComponent/>}
+        {quizQuestionNo==-2 && showRewards && <RewardsComponent trackName={trackName} subTrackNo={subTrackNo}/>}
 
         {/* @ts-ignore */}
         {quizQuestionNo!=-1 &&quizQuestionNo!=-2 && <QuizQuestion question={subtrackData.quiz[quizQuestionNo]?.question} options={subtrackData.quiz[quizQuestionNo]?.options}
@@ -217,6 +223,8 @@ interface QuizQuestionType {
   // setQuizResponses: Dispatch<React.SetStateAction<{ selectedOption: any; showExplanation: boolean }[]>>;
   setQuizResponses: any;
 }
+
+
 
 //@ts-ignore
 const QuizQuestion = ({
@@ -341,222 +349,18 @@ const QuizQuestion = ({
 
 
 
+const RewardsComponent = ({ trackName, subTrackNo }) => {
+  // const { publicKey, sendTransaction } = useWallet();
+  // if (!publicKey) {
+  //   console.log("Wallet not connected");
+  // }
+  // console.log("public key : ", publicKey);
+  const wallet = useWallet();
+  if (!wallet) {
+    console.log("Wallet not connected");
+  }
+  console.log("wallet : ", wallet);
 
-
-
-
-// const QuizQuestion = ({
-//   question,
-//   options,
-//   answer,
-//   explaination,
-//   quizQuestionNo,
-//   totalQuestions,
-//   setQuizQuestionNo,
-//   totalPages,
-//   setPageNo,
-//   setShowRewards,
-//   setAttemptedQuestions, 
-//   quizResponses,setQuizResponses
-// }) => {
-//   const [selectedOption, setSelectedOption] = useState(null);
-//   const [showExplanation, setShowExplanation] = useState(false);
-
-//   useEffect(() => {
-//     // Reset the selected option and explanation when the question changes
-//     setSelectedOption(null);
-//     setShowExplanation(false);
-//   }, [quizQuestionNo]);
-
-//   const handleOptionClick = (option) => {
-//     setSelectedOption(option);
-//     setShowExplanation(true); // Show explanation after an option is clicked
-
-//     // Mark the question as attempted
-//     // setAttemptedQuestions((old) => [...new Set([...old, quizQuestionNo])]);
-//     setAttemptedQuestions(old=> [...old, quizQuestionNo]);
-//   };
-
-//   return (
-//     <div className="bg-gray-900 text-white p-6 rounded-lg max-w-md mx-auto">
-//       <div className="text-sm mb-4">
-//         Question {quizQuestionNo + 1} of {totalQuestions}
-//       </div>
-//       <h2 className="text-2xl font-bold mb-6">{question}?</h2>
-//       <div className="space-y-3">
-//         {options.map((option, index) => (
-//           <button
-//             key={index}
-//             onClick={() => handleOptionClick(option)}
-//             className={`w-full text-left py-3 px-4 rounded-md ${
-//               selectedOption === null
-//                 ? "bg-gray-700 hover:bg-gray-600" // Default state
-//                 : option === answer
-//                 ? "bg-green-500 text-white" // Correct answer
-//                 : option === selectedOption
-//                 ? "bg-red-500 text-white" // Wrong answer
-//                 : "bg-gray-700" // Unselected options after clicking
-//             }`}
-//             disabled={selectedOption !== null} // Disable buttons after selection
-//           >
-//             <div className="flex items-center">
-//               {option === answer && selectedOption !== null && <Check className="mr-2" size={20} />}
-//               <span>{option}</span>
-//             </div>
-//           </button>
-//         ))}
-//       </div>
-
-//       {showExplanation && (
-//         <div className="mt-4 bg-gray-800 p-4 rounded-md">
-//           <h3 className="text-lg font-bold">Explanation:</h3>
-//           <p>{explaination}</p>
-//         </div>
-//       )}
-
-//       <div className="flex justify-between items-center mt-6">
-//         <button
-//           className="text-blue-400"
-//           onClick={() => {
-//             if (quizQuestionNo > 0) {
-//               setQuizQuestionNo(quizQuestionNo - 1);
-//             } else {
-//               setPageNo(totalPages - 1);
-//               setQuizQuestionNo(-1);
-//             }
-//           }}
-//         >
-//           <ChevronLeft size={24} />
-//         </button>
-//         <button
-//           className="bg-blue-500 text-white py-2 px-4 rounded-md"
-//           onClick={() => {
-//             if (quizQuestionNo < totalQuestions - 1) {
-//               setQuizQuestionNo(quizQuestionNo + 1);
-//             } else {
-//               setQuizQuestionNo(-2);
-//               setShowRewards(true);
-//             }
-//           }}
-//           disabled={selectedOption === null} // Disable if no option selected
-//         >
-//           Continue
-//         </button>
-//         <button
-//           className="text-blue-400"
-//           onClick={() => {
-//             if (quizQuestionNo < totalQuestions - 1) {
-//               setQuizQuestionNo(quizQuestionNo + 1);
-//             } else {
-//               setQuizQuestionNo(-2);
-//               setShowRewards(true);
-//             }
-//           }}
-//         >
-//           <ChevronRight size={24} />
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-
-
-
-
-
-
-
-
-
-
-
-// const QuizQuestion = ({ question, options, answer, explaination, quizQuestionNo, totalQuestions,setQuizQuestionNo,totalPages,setPageNo,setShowRewards,setAttemptedQuestions }) => {
-//   const [selectedOption, setSelectedOption] = useState(null);
-//   const [showExplanation, setShowExplanation] = useState(false);
-
-//   const handleOptionClick = (option) => {
-//     setSelectedOption(option);
-//     setShowExplanation(true); // Show explanation after an option is clicked
-//     setAttemptedQuestions(old=>[...old,quizQuestionNo])
-//   };
-
-//   return (
-//     <div className="bg-gray-900 text-white p-6 rounded-lg max-w-md mx-auto">
-//       <div className="text-sm mb-4">
-//         Question {quizQuestionNo + 1} of {totalQuestions}
-//       </div>
-//       <h2 className="text-2xl font-bold mb-6">{question}?</h2>
-//       <div className="space-y-3">
-//         {options.map((option, index) => (
-//           <button
-//             key={index}
-//             onClick={() => handleOptionClick(option)}
-//             className={`w-full text-left py-3 px-4 rounded-md ${
-//               selectedOption === null
-//                 ? "bg-gray-700 hover:bg-gray-600" // Default state
-//                 : option === answer
-//                 ? "bg-green-500 text-white" // Correct answer
-//                 : option === selectedOption
-//                 ? "bg-red-500 text-white" // Wrong answer
-//                 : "bg-gray-700" // Unselected options after clicking
-//             }`}
-//             disabled={selectedOption !== null} // Disable buttons after selection
-//           >
-//             <div className="flex items-center">
-//               {option === answer && selectedOption !== null && <Check className="mr-2" size={20} />}
-//               <span>{option}</span>
-//             </div>
-//           </button>
-//         ))}
-//       </div>
-
-//       {showExplanation && (
-//         <div className="mt-4 bg-gray-800 p-4 rounded-md">
-//           <h3 className="text-lg font-bold">Explanation:</h3>
-//           <p>{explaination}</p>
-//         </div>
-//       )}
-
-//       <div className="flex justify-between items-center mt-6">
-//         <button className="text-blue-400" onClick={()=>{
-//           if(quizQuestionNo>0){
-//             setQuizQuestionNo(quizQuestionNo - 1)
-//           }else{
-//             setPageNo(totalPages-1);
-//             setQuizQuestionNo(-1);
-//           }
-//           // quizQuestionNo>0?setQuizQuestionNo(quizQuestionNo - 1):setPageNo(totalPages-1)
-//         }}>
-//           <ChevronLeft size={24} />
-//         </button>
-//         <button
-//           className="bg-blue-500 text-white py-2 px-4 rounded-md"
-//           disabled={selectedOption === null} // Disable if no option selected
-//         >
-//           Continue
-//         </button>
-//         <button className="text-blue-400" onClick={()=>{
-//           if(quizQuestionNo<totalQuestions-1){
-//             setQuizQuestionNo(quizQuestionNo + 1);
-//           }else{
-//             setQuizQuestionNo(-2)
-//             // setShowRewards(true);
-//         }
-//         // quizQuestionNo<totalQuestions-1?setQuizQuestionNo(quizQuestionNo + 1):setQuizQuestionNo(quizQuestionNo)
-//         }}>
-//           <ChevronRight size={24} />
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-
-
-
-
-const RewardsComponent = () => {
   return (
     <div className="bg-gray-900 text-white p-8 font-sans w-full">
       <div className="max-w-md mx-auto">
@@ -565,9 +369,8 @@ const RewardsComponent = () => {
             {/* <Cube className="w-12 h-12 text-gray-600" /> */}
             <Cuboid className="w-14 h-14 text-gray-600" />
           </div>
-        <h2 className="text-2xl font-bold ">Rewards</h2>
+          <h2 className="text-2xl font-bold ">Rewards</h2>
         </div>
-
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -592,7 +395,15 @@ const RewardsComponent = () => {
           </div>
         </div>
 
-        <button className="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Mint your NFT badge!!</button>
+        <button
+          className="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 
+        px-4 rounded"
+          onClick={() => {
+            createAsset(wallet, trackName, subTrackNo);
+          }}
+        >
+          Mint your NFT badge!!
+        </button>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 "use client";
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useRouter } from 'next/navigation';
 import React from 'react'
 
@@ -17,6 +18,7 @@ const Navbar = () => {
         <a href="#" className="text-white hover:text-gray-300">
           Discord
         </a>
+        <WalletMultiButton/>
           <div className="bg-purple-600 w-10 h-10 rounded-full"></div> {/* User avatar placeholder */}
         {/* <div className="flex space-x-4"> */}
         {/* </div> */}
