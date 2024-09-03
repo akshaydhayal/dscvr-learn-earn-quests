@@ -1,4 +1,5 @@
 "use client";
+import { ChevronLeft, ChevronRight, Check,Cuboid,Star } from "lucide-react";
 import { blockchainQuestData } from "@/blockchainQuestData";
 import Navbar from "@/components/Navbar";
 import { metaplexQuestData } from "@/metaplexQuestData";
@@ -20,12 +21,26 @@ const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
   const {trackName,subTrackNo}=params;
   console.log(params);
   const [pageNo,setPageNo]=useState(0);
+  const [quizQuestionNo,setQuizQuestionNo]=useState(-1);
+  const [showRewards,setShowRewards]=useState(false);
+  const [attemptedQuestions,setAttemptedQuestions]=useState([]);
+
+  
   console.log("pageNo : ",pageNo);
   const router=useRouter();
-
+  
   const [trackData,setTrackData]=useState<trackDataType>();
   
-  const [subtrackData,setSubtrackData]=useState<subtrackDataType>();
+  const [subtrackData,setSubtrackData]=useState<subtrackDataType>([]);
+  const [quizResponses,setQuizResponses]=useState([]);
+
+    // const [quizResponses, setQuizResponses] = useState(
+    //   subtrackData?.quiz?.map(() => ({
+    //     selectedOption: null,
+    //     showExplanation: false,
+    //   }))
+    // );
+
   useEffect(()=>{
     trackName=='solana'?setTrackData(solanaQuestData):(trackName=='metaplex'?setTrackData(metaplexQuestData):setTrackData(blockchainQuestData))
   },[trackName]);
@@ -39,11 +54,26 @@ const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
 
   },[trackData,subTrackNo])
 
-  if(!trackData || !subtrackData){
+    useEffect(() => {
+      const initialResponses = subtrackData.quiz?.map(() => ({
+        selectedOption: null,
+        showExplanation: false,
+      }));
+      setQuizResponses(initialResponses);
+    }, [subtrackData.quiz]);
+
+    useEffect(() => {
+      if (quizResponses?.length > 0 && quizResponses.every((response) => response.selectedOption !== null)) {
+        setShowRewards(true);
+      }
+    }, [quizResponses]);
+
+  if(!trackData || !subtrackData || !subtrackData.pages || !subtrackData.quiz){
     return<p>Loading...</p>
   }
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+  <div className="min-h-screen bg-gray-900 text-white">
 
       {/* Breadcrumbs and Title Section */}
       <section className="bg-blue-800 p-4">
@@ -60,7 +90,6 @@ const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
           &gt; {subtrackData.heading}
         </div>
         <h1 className="text-3xl md:text-4xl font-bold mt-2">{subtrackData?.heading}</h1>
-        {/* <span className="text-yellow-300 mt-2 block text-sm">Beginner Level</span> */}
       </section>
 
       {/* Main Content */}
@@ -68,61 +97,57 @@ const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
         {/* Sidebar */}
         <aside className="w-1/4 bg-gray-800 p-3 py-8 md:p-8 border-r border-gray-700">
           <nav className="space-y-4">
-            {subtrackData && subtrackData.pages.map((item, index) => (
+            {subtrackData && subtrackData.pages?.map((item, index) => (
               <a className={`block cursor-pointer text-[16px]  hover:text-blue-400 ${index === pageNo ? "text-green-400" : "text-slate-300"}`} 
-              onClick={()=>setPageNo(index)} key={index}>
+              onClick={()=>{
+                setPageNo(index);
+                setQuizQuestionNo(-1);
+              }} key={index}>
                 {index + 1}. {item.heading} 
               </a>
             ))}
+            {subtrackData.quiz?.map((question,index:number)=>{
+              return <a className={`block cursor-pointer text-[16px]  hover:text-blue-400 ${index === quizQuestionNo ? "text-green-400" : "text-slate-300"}`} 
+              onClick={()=>{
+                setQuizQuestionNo(index);
+                setPageNo(-1);
+              }} key={index}>
+                {subtrackData.pages.length+index + 1}. Quiz Question {index+1}
+              </a>
+            })}
           </nav>
         </aside>
 
         {/* Content Section */}
-        <section className="w-3/4 p-8">
-          {/* <div className="text-sm text-gray-300 flex justify-between">
-            <button className="text-gray-400 hover:text-white">&lt; Hide</button>
-            <button className="text-gray-400 hover:text-white" onClick={()=>setPageNo(pageNo+1)}>Next &gt;</button>
-          </div> */}
-          <h2 className="text-2xl font-bold mt-4">{subtrackData?.pages[pageNo].heading}</h2>
-          <div className="flex flex-col gap-6 mt-4">
 
+        {quizQuestionNo==-1 && <section className="w-3/4 p-8">
+          <h2 className="text-2xl font-bold mt-4">{subtrackData.pages && subtrackData.pages.length>0 && subtrackData.pages[pageNo].heading}</h2>
+          <div className="flex flex-col gap-6 mt-4">
           {
-            subtrackData.pages[pageNo].content.map((para,ind:number)=>{
+            subtrackData.pages && subtrackData.pages[pageNo].content.map((para,ind:number)=>{
               return<p className="leading-relaxed" key={ind}>{para}</p>
             })
           }
           </div>
-          {/* <p className="mt-4 leading-relaxed">
-            Solana uses Rust as the basic programming language. If you don’t know Rust already, refer to the Rust for Solana Quest (). It is a great primer to
-            all the concepts and basics of rust you need to know to get started with writing code for Solana programs.
-            <br />
-            <br />
-            You also need to have a command line understanding. We’ll be operating heavily on the commandline to compile and deploy Solana programs. We
-            recommend using Linux, Mac or WSL if you are on windows.
-            <br />
-            <br />
-            You must have Node installed on your machine/WSL. If you don’t, you can head over to the following link to install :{" "}
-            <a href="https://nodejs.org/en/download/" className="text-blue-400 hover:underline">
-              https://nodejs.org/en/download/
-            </a>
-            <br />
-            <br />
-            With these prerequisites, you will be able to launch your own crowdfunding platform on Solana blockchain. You can start crowdfunding and start
-            accepting some money for your own little project :)
-            <br />
-            <br />
-            In this Quest we’ll cover the basics of how to write a basic program on Solana and cover some of the fundamentals that come with it.
-            <br />
-            <br />
-            The code we’ll be writing is to run crowdfunding campaigns. Users can request for crowdfunding, and others can send in money to them via this
-            program we write.
-            <br />
-            <br />
-            Now, on to building ...
-          </p> */}
-        {/* <NavigationBar/> */}
-        <NavigationBarr pageNo={pageNo} setPageNo={setPageNo} totalPages={subtrackData.pages.length} subtractData={subtrackData}/>
+          {
+        
+        <NavigationBarr pageNo={pageNo} setPageNo={setPageNo} totalPages={subtrackData.pages.length} subtractData={subtrackData} setQuizQuestionNo={setQuizQuestionNo}/>
+          }
         </section>
+        }
+        {/* {quizQuestionNo!=-1 && subtrackData.quiz.map((question,ind)=>{
+          return <QuizQuestion question={question.question} options={question.options}
+          answer={question.answer} explaination={question.explaination} questionNo={ind}/>}
+          )} */}
+
+        {/* {quizQuestionNo==-2 && attemptedQuestions.length==subtrackData.quiz.length && <RewardsComponent/>} */}
+        {quizQuestionNo==-2 && showRewards && <RewardsComponent/>}
+
+        {quizQuestionNo!=-1 &&quizQuestionNo!=-2 && <QuizQuestion question={subtrackData.quiz[quizQuestionNo]?.question} options={subtrackData.quiz[quizQuestionNo]?.options}
+          answer={subtrackData.quiz[quizQuestionNo]?.answer} explaination={subtrackData.quiz[quizQuestionNo]?.explaination} quizQuestionNo={quizQuestionNo}
+           totalQuestions={subtrackData.quiz.length} setQuizQuestionNo={setQuizQuestionNo} totalPages={subtrackData.pages.length} 
+           setPageNo={setPageNo} setShowRewards={setShowRewards} setAttemptedQuestions={setAttemptedQuestions} quizResponses={quizResponses} setQuizResponses={setQuizResponses}/>}
+
       </main>
 
       
@@ -135,10 +160,10 @@ export default QuestPage;
 
 
 
-function NavigationBarr({pageNo,setPageNo,totalPages,subtrackData}:{pageNo:number,subtrackData:subtrackDataType,totalPages:number}){
+function NavigationBarr({pageNo,setPageNo,totalPages,subtrackData,setQuizQuestionNo}:{pageNo:number,subtrackData:subtrackDataType,totalPages:number}){
   console.log("totalPages : ",totalPages);
   console.log("subtract Data in nav :",subtrackData);
-  return<div className="flex justify-between mt-6 border-t border-t-slate-600 py-3">
+  return (<div className="flex justify-between mt-6 border-t border-t-slate-600 py-3">
     
     <div className="flex items-center gap-4 cursor-pointer hover:text-slate-100" onClick={()=>{
       pageNo>0?setPageNo(pageNo-1):setPageNo(pageNo);
@@ -152,7 +177,13 @@ function NavigationBarr({pageNo,setPageNo,totalPages,subtrackData}:{pageNo:numbe
     </div>
     
     <div className="flex items-center gap-4 cursor-pointer hover:text-slate-100" onClick={()=>{
-      (pageNo<totalPages-1)?setPageNo(pageNo+1):setPageNo(pageNo);
+      if(pageNo<totalPages-1){
+        setPageNo(pageNo+1)
+        // (pageNo<totalPages-1)?setPageNo(pageNo+1):setPageNo(pageNo);
+      }else{
+        setPageNo(-1);
+        setQuizQuestionNo(0);
+      }
     }}>
       <div className="flex flex-col gap-1">
         <p className="text-slate-400 hover:text-slate-300">Next</p>
@@ -161,5 +192,392 @@ function NavigationBarr({pageNo,setPageNo,totalPages,subtrackData}:{pageNo:numbe
       </div>
       <p className="text-slate-400 font-medium text-5xl hover:text-slate-300">{`>`}</p>
     </div>
-  </div>
+  </div>)
 }
+
+
+
+
+
+
+const QuizQuestion = ({
+  question,
+  options,
+  answer,
+  explaination,
+  quizQuestionNo,
+  totalQuestions,
+  setQuizQuestionNo,
+  totalPages,
+  setPageNo,
+  setShowRewards,
+  setAttemptedQuestions,
+  quizResponses,
+  setQuizResponses,
+}) => {
+  // Initialize state based on quizResponses for the current question
+  const currentResponse = quizResponses[quizQuestionNo] || { selectedOption: null, showExplanation: false };
+  console.log("quiz Responses : ",quizResponses);
+  console.log("quiz Responses : ",quizResponses[quizQuestionNo]);
+
+  console.log("question :",question);
+  console.log("explaination :",explaination);
+  const handleOptionClick = (option) => {
+    const newQuizResponses = [...quizResponses];
+    newQuizResponses[quizQuestionNo] = {
+      selectedOption: option,
+      showExplanation: true,
+    };
+    setQuizResponses(newQuizResponses);
+    // setQuizResponses(quizResponses.map((i)=>{
+    //     return (i==quizQuestionNo?{selectedOption:option,showExplanation:true}:i);
+    //   })
+    // );
+
+    // Mark the question as attempted
+    // setAttemptedQuestions((old) => [...new Set([...old, quizQuestionNo])]);
+  };
+
+  return (
+    <div className="bg-gray-900 text-white p-6 rounded-lg max-w-md mx-auto">
+      <div className="text-sm mb-4">
+        Question {quizQuestionNo + 1} of {totalQuestions}
+      </div>
+      <h2 className="text-2xl font-bold mb-6">{question}?</h2>
+      <div className="space-y-3">
+        {options?.map((option, index) => (
+          <button
+            key={index}
+            onClick={() => handleOptionClick(option)}
+            className={`w-full text-left py-3 px-4 rounded-md ${
+              currentResponse.selectedOption === null
+                ? "bg-gray-700 hover:bg-gray-600" // Default state
+                : option === answer
+                ? "bg-green-500 text-white" // Correct answer
+                : option === currentResponse.selectedOption
+                ? "bg-red-500 text-white" // Wrong answer
+                : "bg-gray-700" // Unselected options after clicking
+            }`}
+            disabled={currentResponse.selectedOption !== null} // Disable buttons after selection
+          >
+            <div className="flex items-center">
+              {option === answer && currentResponse.selectedOption !== null && <Check className="mr-2" size={20} />}
+              <span>{option}</span>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {currentResponse.showExplanation && (
+        <div className="mt-4 bg-gray-800 p-4 rounded-md">
+          <h3 className="text-lg font-bold">Explanation:</h3>
+          <p>{explaination}</p>
+        </div>
+      )}
+
+      <div className="flex justify-between items-center mt-6">
+        <button
+          className="text-blue-400"
+          onClick={() => {
+            if (quizQuestionNo > 0) {
+              setQuizQuestionNo(quizQuestionNo - 1);
+            } else {
+              setPageNo(totalPages - 1);
+              setQuizQuestionNo(-1);
+            }
+          }}
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <button
+          className="bg-blue-500 text-white py-2 px-4 rounded-md"
+          onClick={() => {
+            if (quizQuestionNo < totalQuestions - 1) {
+              setQuizQuestionNo(quizQuestionNo + 1);
+            } else {
+              setQuizQuestionNo(-2);
+              setShowRewards(true);
+            }
+          }}
+          disabled={currentResponse.selectedOption === null} // Disable if no option selected
+        >
+          Continue
+        </button>
+        <button
+          className="text-blue-400"
+          onClick={() => {
+            if (quizQuestionNo < totalQuestions - 1) {
+              setQuizQuestionNo(quizQuestionNo + 1);
+            } else {
+              setQuizQuestionNo(-2);
+              setShowRewards(true);
+            }
+          }}
+        >
+          <ChevronRight size={24} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+
+
+
+
+
+
+
+
+// const QuizQuestion = ({
+//   question,
+//   options,
+//   answer,
+//   explaination,
+//   quizQuestionNo,
+//   totalQuestions,
+//   setQuizQuestionNo,
+//   totalPages,
+//   setPageNo,
+//   setShowRewards,
+//   setAttemptedQuestions, 
+//   quizResponses,setQuizResponses
+// }) => {
+//   const [selectedOption, setSelectedOption] = useState(null);
+//   const [showExplanation, setShowExplanation] = useState(false);
+
+//   useEffect(() => {
+//     // Reset the selected option and explanation when the question changes
+//     setSelectedOption(null);
+//     setShowExplanation(false);
+//   }, [quizQuestionNo]);
+
+//   const handleOptionClick = (option) => {
+//     setSelectedOption(option);
+//     setShowExplanation(true); // Show explanation after an option is clicked
+
+//     // Mark the question as attempted
+//     // setAttemptedQuestions((old) => [...new Set([...old, quizQuestionNo])]);
+//     setAttemptedQuestions(old=> [...old, quizQuestionNo]);
+//   };
+
+//   return (
+//     <div className="bg-gray-900 text-white p-6 rounded-lg max-w-md mx-auto">
+//       <div className="text-sm mb-4">
+//         Question {quizQuestionNo + 1} of {totalQuestions}
+//       </div>
+//       <h2 className="text-2xl font-bold mb-6">{question}?</h2>
+//       <div className="space-y-3">
+//         {options.map((option, index) => (
+//           <button
+//             key={index}
+//             onClick={() => handleOptionClick(option)}
+//             className={`w-full text-left py-3 px-4 rounded-md ${
+//               selectedOption === null
+//                 ? "bg-gray-700 hover:bg-gray-600" // Default state
+//                 : option === answer
+//                 ? "bg-green-500 text-white" // Correct answer
+//                 : option === selectedOption
+//                 ? "bg-red-500 text-white" // Wrong answer
+//                 : "bg-gray-700" // Unselected options after clicking
+//             }`}
+//             disabled={selectedOption !== null} // Disable buttons after selection
+//           >
+//             <div className="flex items-center">
+//               {option === answer && selectedOption !== null && <Check className="mr-2" size={20} />}
+//               <span>{option}</span>
+//             </div>
+//           </button>
+//         ))}
+//       </div>
+
+//       {showExplanation && (
+//         <div className="mt-4 bg-gray-800 p-4 rounded-md">
+//           <h3 className="text-lg font-bold">Explanation:</h3>
+//           <p>{explaination}</p>
+//         </div>
+//       )}
+
+//       <div className="flex justify-between items-center mt-6">
+//         <button
+//           className="text-blue-400"
+//           onClick={() => {
+//             if (quizQuestionNo > 0) {
+//               setQuizQuestionNo(quizQuestionNo - 1);
+//             } else {
+//               setPageNo(totalPages - 1);
+//               setQuizQuestionNo(-1);
+//             }
+//           }}
+//         >
+//           <ChevronLeft size={24} />
+//         </button>
+//         <button
+//           className="bg-blue-500 text-white py-2 px-4 rounded-md"
+//           onClick={() => {
+//             if (quizQuestionNo < totalQuestions - 1) {
+//               setQuizQuestionNo(quizQuestionNo + 1);
+//             } else {
+//               setQuizQuestionNo(-2);
+//               setShowRewards(true);
+//             }
+//           }}
+//           disabled={selectedOption === null} // Disable if no option selected
+//         >
+//           Continue
+//         </button>
+//         <button
+//           className="text-blue-400"
+//           onClick={() => {
+//             if (quizQuestionNo < totalQuestions - 1) {
+//               setQuizQuestionNo(quizQuestionNo + 1);
+//             } else {
+//               setQuizQuestionNo(-2);
+//               setShowRewards(true);
+//             }
+//           }}
+//         >
+//           <ChevronRight size={24} />
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+// const QuizQuestion = ({ question, options, answer, explaination, quizQuestionNo, totalQuestions,setQuizQuestionNo,totalPages,setPageNo,setShowRewards,setAttemptedQuestions }) => {
+//   const [selectedOption, setSelectedOption] = useState(null);
+//   const [showExplanation, setShowExplanation] = useState(false);
+
+//   const handleOptionClick = (option) => {
+//     setSelectedOption(option);
+//     setShowExplanation(true); // Show explanation after an option is clicked
+//     setAttemptedQuestions(old=>[...old,quizQuestionNo])
+//   };
+
+//   return (
+//     <div className="bg-gray-900 text-white p-6 rounded-lg max-w-md mx-auto">
+//       <div className="text-sm mb-4">
+//         Question {quizQuestionNo + 1} of {totalQuestions}
+//       </div>
+//       <h2 className="text-2xl font-bold mb-6">{question}?</h2>
+//       <div className="space-y-3">
+//         {options.map((option, index) => (
+//           <button
+//             key={index}
+//             onClick={() => handleOptionClick(option)}
+//             className={`w-full text-left py-3 px-4 rounded-md ${
+//               selectedOption === null
+//                 ? "bg-gray-700 hover:bg-gray-600" // Default state
+//                 : option === answer
+//                 ? "bg-green-500 text-white" // Correct answer
+//                 : option === selectedOption
+//                 ? "bg-red-500 text-white" // Wrong answer
+//                 : "bg-gray-700" // Unselected options after clicking
+//             }`}
+//             disabled={selectedOption !== null} // Disable buttons after selection
+//           >
+//             <div className="flex items-center">
+//               {option === answer && selectedOption !== null && <Check className="mr-2" size={20} />}
+//               <span>{option}</span>
+//             </div>
+//           </button>
+//         ))}
+//       </div>
+
+//       {showExplanation && (
+//         <div className="mt-4 bg-gray-800 p-4 rounded-md">
+//           <h3 className="text-lg font-bold">Explanation:</h3>
+//           <p>{explaination}</p>
+//         </div>
+//       )}
+
+//       <div className="flex justify-between items-center mt-6">
+//         <button className="text-blue-400" onClick={()=>{
+//           if(quizQuestionNo>0){
+//             setQuizQuestionNo(quizQuestionNo - 1)
+//           }else{
+//             setPageNo(totalPages-1);
+//             setQuizQuestionNo(-1);
+//           }
+//           // quizQuestionNo>0?setQuizQuestionNo(quizQuestionNo - 1):setPageNo(totalPages-1)
+//         }}>
+//           <ChevronLeft size={24} />
+//         </button>
+//         <button
+//           className="bg-blue-500 text-white py-2 px-4 rounded-md"
+//           disabled={selectedOption === null} // Disable if no option selected
+//         >
+//           Continue
+//         </button>
+//         <button className="text-blue-400" onClick={()=>{
+//           if(quizQuestionNo<totalQuestions-1){
+//             setQuizQuestionNo(quizQuestionNo + 1);
+//           }else{
+//             setQuizQuestionNo(-2)
+//             // setShowRewards(true);
+//         }
+//         // quizQuestionNo<totalQuestions-1?setQuizQuestionNo(quizQuestionNo + 1):setQuizQuestionNo(quizQuestionNo)
+//         }}>
+//           <ChevronRight size={24} />
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+
+
+
+
+const RewardsComponent = () => {
+  return (
+    <div className="bg-gray-900 text-white p-8 font-sans w-full">
+      <div className="max-w-md mx-auto">
+        <div className="mb-6 w-full flex items-center gap-6">
+          <div className="w-16 h-16 bg-gray-800 rounded-xl flex items-center justify-center mb-4">
+            {/* <Cube className="w-12 h-12 text-gray-600" /> */}
+            <Cuboid className="w-14 h-14 text-gray-600" />
+          </div>
+        <h2 className="text-2xl font-bold ">Rewards</h2>
+        </div>
+
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
+              <span>Primary address</span>
+            </div>
+            <button className="text-blue-400 hover:text-blue-300">Linea</button>
+          </div>
+
+          <div className="bg-gray-800 rounded-lg p-4 flex items-center justify-between">
+            <span>Track Completion NFT</span>
+            <div className="w-5 h-5 bg-yellow-600 rounded"></div>
+          </div>
+
+          <div className="bg-gray-800 rounded-lg p-4 flex items-center justify-between">
+            <span>XP</span>
+            <div className="flex items-center">
+              <Star className="w-5 h-5 text-green-400 mr-1" />
+              <span>75 XP</span>
+            </div>
+          </div>
+        </div>
+
+        <button className="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Mint your NFT badge!!</button>
+      </div>
+    </div>
+  );
+};
