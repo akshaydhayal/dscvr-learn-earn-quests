@@ -15,6 +15,7 @@ const Navbar = () => {
       registerCanvasWallet(client);
     }
   }, [client]);
+  // client.c
 
   console.log("client", client);
   console.log(user);

@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 
 import { useWallet } from "@solana/wallet-adapter-react";
 import { createAsset } from "@/utils/createAsset";
+import { useCanvasClient } from "@/utils/useCanvasClient";
 
 
 
@@ -441,12 +442,18 @@ const RewardsComponent = ({ trackName, subTrackNo }:{trackName:string,subTrackNo
   //   console.log("Wallet not connected");
   // }
   // console.log("public key : ", publicKey);
+  const {client}=useCanvasClient();
+  // client.co
   const wallet = useWallet();
   if (!wallet) {
     console.log("Wallet not connected");
     // wallet.connect()
   }
   console.log("wallet : ", wallet);
+  
+  async function handleClick(){
+    await client?.connectWallet("solana:103");
+  }
 
   return (
     <div className="bg-gray-900 text-white p-8 font-sans w-full">
@@ -490,6 +497,7 @@ const RewardsComponent = ({ trackName, subTrackNo }:{trackName:string,subTrackNo
             //   alert("Please connect your wallet first");
             //   // wallet.connect()
             // }
+            handleClick();
             createAsset(wallet, trackName, subTrackNo);
           }}
         >
