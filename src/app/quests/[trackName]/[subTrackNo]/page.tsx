@@ -4,7 +4,7 @@ import { blockchainQuestData } from "@/blockchainQuestData";
 import Navbar from "@/components/Navbar";
 import { metaplexQuestData } from "@/metaplexQuestData";
 import { solanaQuestData } from "@/solanaQuestData";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { trackDataType } from "../page";
 import { useRouter } from "next/navigation";
 
@@ -23,7 +23,6 @@ const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
   const [pageNo,setPageNo]=useState(0);
   const [quizQuestionNo,setQuizQuestionNo]=useState(-1);
   const [showRewards,setShowRewards]=useState(false);
-  const [attemptedQuestions,setAttemptedQuestions]=useState([]);
 
   
   console.log("pageNo : ",pageNo);
@@ -31,7 +30,7 @@ const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
   
   const [trackData,setTrackData]=useState<trackDataType>();
   
-  const [subtrackData,setSubtrackData]=useState<subtrackDataType>([]);
+  const [subtrackData,setSubtrackData]=useState<subtrackDataType>();
   const [quizResponses,setQuizResponses]=useState([]);
 
     // const [quizResponses, setQuizResponses] = useState(
@@ -55,15 +54,16 @@ const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
   },[trackData,subTrackNo])
 
     useEffect(() => {
-      const initialResponses = subtrackData.quiz?.map(() => ({
+      const initialResponses = subtrackData?.quiz?.map(() => ({
         selectedOption: null,
         showExplanation: false,
       }));
+      //@ts-ignore
       setQuizResponses(initialResponses);
-    }, [subtrackData.quiz]);
+    }, [subtrackData?.quiz]);
 
     useEffect(() => {
-      if (quizResponses?.length > 0 && quizResponses.every((response) => response.selectedOption !== null)) {
+      if (quizResponses?.length > 0 && quizResponses.every((response:any) => response.selectedOption !== null)) {
         setShowRewards(true);
       }
     }, [quizResponses]);
@@ -131,6 +131,7 @@ const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
           </div>
           {
         
+        //@ts-ignore
         <NavigationBarr pageNo={pageNo} setPageNo={setPageNo} totalPages={subtrackData.pages.length} subtractData={subtrackData} setQuizQuestionNo={setQuizQuestionNo}/>
           }
         </section>
@@ -143,10 +144,11 @@ const QuestPage = ({params}:{params:{subTrackNo:number,trackName:string}}) => {
         {/* {quizQuestionNo==-2 && attemptedQuestions.length==subtrackData.quiz.length && <RewardsComponent/>} */}
         {quizQuestionNo==-2 && showRewards && <RewardsComponent/>}
 
+        {/* @ts-ignore */}
         {quizQuestionNo!=-1 &&quizQuestionNo!=-2 && <QuizQuestion question={subtrackData.quiz[quizQuestionNo]?.question} options={subtrackData.quiz[quizQuestionNo]?.options}
           answer={subtrackData.quiz[quizQuestionNo]?.answer} explaination={subtrackData.quiz[quizQuestionNo]?.explaination} quizQuestionNo={quizQuestionNo}
            totalQuestions={subtrackData.quiz.length} setQuizQuestionNo={setQuizQuestionNo} totalPages={subtrackData.pages.length} 
-           setPageNo={setPageNo} setShowRewards={setShowRewards} setAttemptedQuestions={setAttemptedQuestions} quizResponses={quizResponses} setQuizResponses={setQuizResponses}/>}
+           setPageNo={setPageNo} setShowRewards={setShowRewards} quizResponses={quizResponses} setQuizResponses={setQuizResponses}/>}
 
       </main>
 
@@ -160,7 +162,8 @@ export default QuestPage;
 
 
 
-function NavigationBarr({pageNo,setPageNo,totalPages,subtrackData,setQuizQuestionNo}:{pageNo:number,subtrackData:subtrackDataType,totalPages:number}){
+function NavigationBarr({pageNo,setPageNo,totalPages,subtrackData,setQuizQuestionNo}:
+  {pageNo:number,setPageNo:Dispatch<React.SetStateAction<number>> ,subtrackData:subtrackDataType,setQuizQuestionNo:Dispatch<React.SetStateAction<number>>,totalPages:number}){
   console.log("totalPages : ",totalPages);
   console.log("subtract Data in nav :",subtrackData);
   return (<div className="flex justify-between mt-6 border-t border-t-slate-600 py-3">
@@ -198,8 +201,24 @@ function NavigationBarr({pageNo,setPageNo,totalPages,subtrackData,setQuizQuestio
 
 
 
+//@ts-ignore
+interface QuizQuestionType {
+  question: string;
+  options: string[];
+  answer: string;
+  explaination: string;
+  totalPages: number;
+  totalQuestions: number;
+  quizQuestionNo: number;
+  setQuizQuestionNo: Dispatch<React.SetStateAction<number>>;
+  setPageNo: Dispatch<React.SetStateAction<number>>;
+  setShowRewards: Dispatch<React.SetStateAction<boolean>>;
+  quizResponses: { selectedOption: any; showExplanation: boolean }[];
+  // setQuizResponses: Dispatch<React.SetStateAction<{ selectedOption: any; showExplanation: boolean }[]>>;
+  setQuizResponses: any;
+}
 
-
+//@ts-ignore
 const QuizQuestion = ({
   question,
   options,
@@ -211,18 +230,15 @@ const QuizQuestion = ({
   totalPages,
   setPageNo,
   setShowRewards,
-  setAttemptedQuestions,
   quizResponses,
   setQuizResponses,
-}) => {
+}:QuizQuestionType) => {
   // Initialize state based on quizResponses for the current question
   const currentResponse = quizResponses[quizQuestionNo] || { selectedOption: null, showExplanation: false };
   console.log("quiz Responses : ",quizResponses);
   console.log("quiz Responses : ",quizResponses[quizQuestionNo]);
 
-  console.log("question :",question);
-  console.log("explaination :",explaination);
-  const handleOptionClick = (option) => {
+  const handleOptionClick = (option:any) => {
     const newQuizResponses = [...quizResponses];
     newQuizResponses[quizQuestionNo] = {
       selectedOption: option,

@@ -2,14 +2,14 @@
 import { useRouter } from "next/navigation";
 import React from "react";
 
-const QuestCards = ({trackData,trackName}) => {
+const QuestCards = ({trackData,trackName}:{trackData:any,trackName:string}) => {
   return (
     <div className="bg-gray-900 p-8 px-16 rounded-lg">
       <h2 className="text-white text-2xl font-bold mb-6">Get started</h2>
       <div className="flex gap-4 md:gap-8 flex-wrap">
         {
-            trackData && trackData.subtracks.map((quest,index:number)=>{
-                return <Card imageSrc={quest.subtrack_image} trackName={trackName}
+            trackData && trackData.subtracks.map((quest:any,index:number)=>{
+                return <Card key={index} imageSrc={quest.subtrack_image} trackName={trackName}
                 title={quest.heading} subtitle={quest.subheading} xp={quest.points} subtrack_index={index}/>  
             })
         }
