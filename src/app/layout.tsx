@@ -43,7 +43,8 @@ export default function RootLayout({
         <meta name="dscvr:canvas:version" content="vNext"/>
         <meta name="og:image" content="https://my-canvas.com/preview-image.png"/>
       </head>
-      <body className={inter.className} style={{height:'1500px'}}>
+      {/* <body className={inter.className} style={{height:'1500px'}}> */}
+      <body className={inter.className}>
         <div>
           <ConnectionProvider endpoint={endpoint} >
             <WalletProvider wallets={[phantomWallet]} autoConnect>
