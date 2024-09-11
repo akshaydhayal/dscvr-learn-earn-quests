@@ -439,54 +439,62 @@ const QuizQuestion = ({
 
 
 const RewardsComponent = ({ trackName, subTrackNo }:{trackName:string,subTrackNo:number}) => {
-  const [nftMintStatus,setNftMintStatus]=useState(false);
+  const [nftMintStatus, setNftMintStatus] = useState(false);
   // const { publicKey, sendTransaction } = useWallet();
   // if (!publicKey) {
   //   console.log("Wallet not connected");
   // }
   // console.log("public key : ", publicKey);
-  const {client}=useCanvasClient();
+  const { client } = useCanvasClient();
   // client.co
   const wallet = useWallet();
+  const { publicKey} = useWallet();
   if (!wallet) {
     console.log("Wallet not connected");
     // wallet.connect()
   }
   console.log("wallet : ", wallet);
-  
-  async function handleClick(){
+
+  async function handleClick() {
     await client?.connectWallet("solana:103");
   }
 
-    const getNextQuestUrl = () => {
-      // Define the number of subtracks in each track
-      const tracks = {
-        solana: 4,
-        metaplex: 3,
-        blockchain: 3,
-      };
-
-      // Get the list of track names in the order they are followed
-      const trackOrder = ["solana", "metaplex", "blockchain"];
-
-      // Find the current track's index in the order array
-      const currentTrackIndex = trackOrder.indexOf(trackName);
-
-      // Check if we're on the last subtrack of the current track
-      //@ts-ignore
-      if (subTrackNo >= tracks[trackName] - 1) {
-        // If we're on the last subtrack, move to the next track
-        const nextTrackIndex = (currentTrackIndex + 1) % trackOrder.length;
-        const nextTrack = trackOrder[nextTrackIndex];
-        const nextSubtrack = 0;
-        return `/${nextTrack}/${nextSubtrack}`;
-      } else {
-        // If not on the last subtrack, stay on the same track but move to the next subtrack
-        const nextSubtrack = Number(subTrackNo) + 1;
-        return `/${trackName}/${nextSubtrack}`;
-      }
+  const getNextQuestUrl = () => {
+    // Define the number of subtracks in each track
+    const tracks = {
+      solana: 4,
+      metaplex: 3,
+      blockchain: 3,
     };
-  const router=useRouter();
+
+    // Get the list of track names in the order they are followed
+    const trackOrder = ["solana", "metaplex", "blockchain"];
+
+    // Find the current track's index in the order array
+    const currentTrackIndex = trackOrder.indexOf(trackName);
+
+    // Check if we're on the last subtrack of the current track
+    //@ts-ignore
+    if (subTrackNo >= tracks[trackName] - 1) {
+      // If we're on the last subtrack, move to the next track
+      const nextTrackIndex = (currentTrackIndex + 1) % trackOrder.length;
+      const nextTrack = trackOrder[nextTrackIndex];
+      const nextSubtrack = 0;
+      return `/${nextTrack}/${nextSubtrack}`;
+    } else {
+      // If not on the last subtrack, stay on the same track but move to the next subtrack
+      const nextSubtrack = Number(subTrackNo) + 1;
+      return `/${trackName}/${nextSubtrack}`;
+    }
+  };
+  const router = useRouter();
+  if (!publicKey) {
+    return (
+      <div className="flex justify-center p-6">
+        <p className="text-lg font-medium">Connect your Wallet to see the Rewards</p>
+      </div>
+    );
+  }
   return (
     <div className="bg-gray-900 text-white p-8 font-sans w-full">
       <div className="max-w-md mx-auto">
