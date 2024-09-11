@@ -29,7 +29,7 @@ export default function RootLayout({
   const { client, user, content, isReady } = useCanvasClient();
   useResizeObserver(client);
   client?.resize({
-    height:document.body.clientHeight,
+    height:700,
     width:600
   })
   // document.
@@ -45,6 +45,7 @@ export default function RootLayout({
       </head>
       {/* <body className={inter.className} style={{height:'1500px'}}> */}
       <body className={inter.className}>
+        {/* <div className="border h-[700px]"> */}
         <div>
           <ConnectionProvider endpoint={endpoint} >
             <WalletProvider wallets={[phantomWallet]} autoConnect>
