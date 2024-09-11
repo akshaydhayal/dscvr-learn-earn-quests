@@ -28,10 +28,10 @@ export default function RootLayout({
   const phantomWallet=new PhantomWalletAdapter();
   const { client, user, content, isReady } = useCanvasClient();
   useResizeObserver(client);
-  client?.resize({
-    height:700,
-    width:600
-  })
+  // client?.resize({
+  //   height:700,
+  //   width:600
+  // })
   // document.
   return (
     <html lang="en">
@@ -43,8 +43,8 @@ export default function RootLayout({
         <meta name="dscvr:canvas:version" content="vNext"/>
         <meta name="og:image" content="https://my-canvas.com/preview-image.png"/>
       </head>
-      {/* <body className={inter.className} style={{height:'1500px'}}> */}
-      <body className={inter.className}>
+      <body className={inter.className} style={{height:'700px'}}>
+      {/* <body className={inter.className}> */}
         {/* <div className="border h-[700px]"> */}
         <div>
           <ConnectionProvider endpoint={endpoint} >
