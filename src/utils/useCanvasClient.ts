@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { CanvasClient, CanvasInterface } from "@dscvr-one/canvas-client-sdk";
-import { registerCanvasWallet } from "@dscvr-one/canvas-wallet-adapter";
 // import { validateHostMessage } from "../lib/dscvr";
 
 type CanvasState = {
@@ -26,16 +25,19 @@ export function useCanvasClient() {
 
     async function initializeCanvas() {
       const client = new CanvasClient();
-      registerCanvasWallet(client);
 
       try {
         const response = await client.ready();
-        setState({
-          client,
-          user: response.untrusted.user,
-          content: response.untrusted.content,
-          isReady: true,
-        });
+        // const isValidResponse = await validateHostMessage(response);
+        const isValidResponse = true;
+        if (isValidResponse) {
+          setState({
+            client,
+            user: response.untrusted.user,
+            content: response.untrusted.content,
+            isReady: true,
+          });
+        }
       } catch (error) {
         setState((prev) => ({ ...prev, isReady: true }));
       }
