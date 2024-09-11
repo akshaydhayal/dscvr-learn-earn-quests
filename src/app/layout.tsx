@@ -26,13 +26,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const canvasClient = new CanvasClient();
-  registerCanvasWallet(canvasClient);
+  // const canvasClient = new CanvasClient();
+  // registerCanvasWallet(canvasClient);
 
   const endpoint=clusterApiUrl("devnet");
   const phantomWallet=new PhantomWalletAdapter();
   const { client, user, content, isReady } = useCanvasClient();
   useResizeObserver(client);
+  if(client){
+    registerCanvasWallet(client)
+  }
  
   return (
     <html lang="en">

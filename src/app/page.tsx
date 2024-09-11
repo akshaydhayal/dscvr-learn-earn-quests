@@ -1,8 +1,12 @@
 import Navbar from "@/components/Navbar";
 import Tracks from "@/components/Tracks";
+import { CanvasClient } from "@dscvr-one/canvas-client-sdk";
+import { registerCanvasWallet } from "@dscvr-one/canvas-wallet-adapter";
 import React from "react";
 
 const HomePage = () => {
+  // const canvasClient = new CanvasClient();
+  // registerCanvasWallet(canvasClient);
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* <Navbar/> */}
