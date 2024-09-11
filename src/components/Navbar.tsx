@@ -32,11 +32,8 @@ const Navbar = () => {
         <a onClick={() => router.push("/quests")} className="text-white hover:text-gray-300 cursor-pointer">
           Explore Tracks
         </a>
-        <a href="#" className="text-white hover:text-gray-300">
-          Discord
-        </a>
+        
         <WalletMultiButton />
-        <div className="bg-purple-600 w-10 h-10 rounded-full"></div> {/* User avatar placeholder */}
       </nav>
     </div>
   );

@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { createAsset } from "@/utils/createAsset";
 import { useCanvasClient } from "@/utils/useCanvasClient";
+import NftModal from "@/components/NFTDisplayModal";
 
 
 
@@ -178,11 +179,12 @@ function NavigationBarr({pageNo,setPageNo,totalPages,subtrackData,setQuizQuestio
     <div className="flex items-center gap-4 cursor-pointer hover:text-slate-100" onClick={()=>{
       pageNo>0?setPageNo(pageNo-1):setPageNo(pageNo);
     }}>
-      <p className="text-slate-400 font-medium text-5xl hover:text-slate-300">{`<`}</p>
-      <div className="flex flex-col gap-1">
-        <p className="text-slate-400 hover:text-slate-300">Prev</p>
+      {/* <p className="text-slate-400 font-medium text-4xl hover:text-slate-300">{`<`}</p> */}
+      <div className="flex items-center  gap-2">
+      <p className="text-slate-400 font-medium text-4xl hover:text-slate-300">{`<`}</p>
+        <p className="text-slate-400 hover:text-slate-300 pt-1">Prev</p>
         {/* <p className="text-slate-200  font-medium hover:text-slate-100">{(pageNo>0)?(subtrackData?.pages[pageNo-1].heading):(subtrackData?.pages[pageNo].heading)}</p> */}
-        <p className="text-slate-200  font-medium hover:text-slate-100">{`${subtrackData?.pages[2].heading}`}</p>
+        {/* <p className="text-slate-200  font-medium hover:text-slate-100">{`${subtrackData?.pages[2].heading}`}</p> */}
       </div>
     </div>
     
@@ -195,12 +197,12 @@ function NavigationBarr({pageNo,setPageNo,totalPages,subtrackData,setQuizQuestio
         setQuizQuestionNo(0);
       }
     }}>
-      <div className="flex flex-col gap-1">
-        <p className="text-slate-400 hover:text-slate-300">Next</p>
+      <div className="flex items-center gap-2">
+        <p className="text-slate-400 hover:text-slate-300 pt-1">Next</p>
         {/* <p className="text-slate-200  font-medium hover:text-slate-100">{(pageNo<totalPages-1)?(`${subtrackData?.pages[pageNo+1].heading}`):(subtrackData.pages[pageNo].heading)}</p> */}
-        <p className="text-slate-200  font-medium hover:text-slate-100">{subtrackData?.pages[1].heading}</p>
+        {/* <p className="text-slate-200  font-medium hover:text-slate-100">{subtrackData?.pages[1].heading}</p> */}
+      <p className="text-slate-400 font-medium text-4xl hover:text-slate-300">{`>`}</p>
       </div>
-      <p className="text-slate-400 font-medium text-5xl hover:text-slate-300">{`>`}</p>
     </div>
   </div>)
 }
@@ -437,6 +439,7 @@ const QuizQuestion = ({
 
 
 const RewardsComponent = ({ trackName, subTrackNo }:{trackName:string,subTrackNo:number}) => {
+  const [nftMintStatus,setNftMintStatus]=useState(false);
   // const { publicKey, sendTransaction } = useWallet();
   // if (!publicKey) {
   //   console.log("Wallet not connected");
@@ -455,6 +458,35 @@ const RewardsComponent = ({ trackName, subTrackNo }:{trackName:string,subTrackNo
     await client?.connectWallet("solana:103");
   }
 
+    const getNextQuestUrl = () => {
+      // Define the number of subtracks in each track
+      const tracks = {
+        solana: 4,
+        metaplex: 3,
+        blockchain: 3,
+      };
+
+      // Get the list of track names in the order they are followed
+      const trackOrder = ["solana", "metaplex", "blockchain"];
+
+      // Find the current track's index in the order array
+      const currentTrackIndex = trackOrder.indexOf(trackName);
+
+      // Check if we're on the last subtrack of the current track
+      //@ts-ignore
+      if (subTrackNo >= tracks[trackName] - 1) {
+        // If we're on the last subtrack, move to the next track
+        const nextTrackIndex = (currentTrackIndex + 1) % trackOrder.length;
+        const nextTrack = trackOrder[nextTrackIndex];
+        const nextSubtrack = 0;
+        return `/${nextTrack}/${nextSubtrack}`;
+      } else {
+        // If not on the last subtrack, stay on the same track but move to the next subtrack
+        const nextSubtrack = Number(subTrackNo) + 1;
+        return `/${trackName}/${nextSubtrack}`;
+      }
+    };
+  const router=useRouter();
   return (
     <div className="bg-gray-900 text-white p-8 font-sans w-full">
       <div className="max-w-md mx-auto">
@@ -467,13 +499,13 @@ const RewardsComponent = ({ trackName, subTrackNo }:{trackName:string,subTrackNo
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <div className="flex items-center">
               <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
               <span>Primary address</span>
             </div>
             <button className="text-blue-400 hover:text-blue-300">Linea</button>
-          </div>
+          </div> */}
 
           <div className="bg-gray-800 rounded-lg p-4 flex items-center justify-between">
             <span>Track Completion NFT</span>
@@ -498,11 +530,22 @@ const RewardsComponent = ({ trackName, subTrackNo }:{trackName:string,subTrackNo
             //   // wallet.connect()
             // }
             handleClick();
-            createAsset(wallet, trackName, subTrackNo);
+            // createAsset(wallet, trackName, subTrackNo);
+            createAsset(wallet, trackName, subTrackNo, setNftMintStatus);
           }}
         >
           Mint your NFT badge!!
         </button>
+        <button
+          className="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 
+        px-4 rounded"
+          onClick={() => {
+            router.push(`/quests/${getNextQuestUrl()}`);
+          }}
+        >
+          Go to Next Quest
+        </button>
+        {nftMintStatus && <NftModal trackName={trackName} setNftMintStatus={setNftMintStatus} nextQuestUrl={getNextQuestUrl()} />}
       </div>
     </div>
   );

@@ -5,7 +5,8 @@ import { generateSigner, signerIdentity } from "@metaplex-foundation/umi";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 import { assetMetadataUri } from "./assetMetadata";
 
-export async function createAsset(wallet:any, trackName:string, subTrackNo:number) {
+//@ts-ignore
+export async function createAsset(wallet:any, trackName:string, subTrackNo:number,setNftMintStatus) {
   if(!wallet){
     await wallet.connect();
   }
@@ -39,6 +40,7 @@ export async function createAsset(wallet:any, trackName:string, subTrackNo:numbe
     const assetdetails = await fetchAsset(umi, asset.publicKey, {
       skipDerivePlugins: false,
     });
+    setNftMintStatus(true);
 
     console.log("fetched asset details : ",assetdetails);
   }catch (error) {
